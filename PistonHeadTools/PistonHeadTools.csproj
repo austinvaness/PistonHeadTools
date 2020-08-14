@@ -103,7 +103,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Workshop\" />
+    <Content Include="Workshop\metadata.mod" />
+    <Content Include="Workshop\Textures\PistonTopLarge.png" />
+    <Content Include="Workshop\Textures\PistonTopSmall.png" />
+    <Content Include="Workshop\thumb.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Workshop\Data\BlockVariantGroups.sbc" />
+    <None Include="Workshop\Data\CubeBlocks.sbc" />
+    <None Include="Workshop\modinfo.sbmi" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -119,6 +127,6 @@ xcopy "*.cs" "%Appdata%\SpaceEngineers\Mods\$(ProjectName)\Data\Scripts\$(Projec
 xcopy "Workshop\*.*" "%Appdata%\SpaceEngineers\Mods\$(ProjectName)" /Y /S</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-   <LangVersion>6</LangVersion>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
 </Project>
