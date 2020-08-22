@@ -1,27 +1,40 @@
 ﻿using System.Collections.Generic;
+using System;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using VRage.Game;
 using VRage.Game.Components;
+using Sandbox.Common.ObjectBuilders;
 
 namespace avaness.PistonHeadTools
 {
     [MySessionComponentDescriptor(MyUpdateOrder.NoUpdate)]
     public class MySession : MySessionComponentBase
     {
-        public static bool IsServer => MyAPIGateway.Session.IsServer || MyAPIGateway.Session.OnlineMode == MyOnlineModeEnum.OFFLINE;
+        private Random rand = new Random();
+
+        public static MySession Instance;
+        public bool IsServer => MyAPIGateway.Session.IsServer || MyAPIGateway.Session.OnlineMode == MyOnlineModeEnum.OFFLINE;
+
 
         public override void BeforeStart()
         {
+            Instance = this;
+
             MyAPIGateway.TerminalControls.CustomControlGetter += TerminalControls_CustomControlGetter;
             if (IsServer)
                 MyAPIGateway.Multiplayer.RegisterMessageHandler(NetPacket.id, NetPacket.Received);
+            else
+                MyAPIGateway.Multiplayer.RegisterMessageHandler(AddBlockPacket.id, AddBlockPacket.Received);
         }
 
         protected override void UnloadData()
         {
+            Instance = null;
+
             MyAPIGateway.TerminalControls.CustomControlGetter -= TerminalControls_CustomControlGetter;
             MyAPIGateway.Multiplayer.UnregisterMessageHandler(NetPacket.id, NetPacket.Received);
+            MyAPIGateway.Multiplayer.UnregisterMessageHandler(AddBlockPacket.id, AddBlockPacket.Received);
         }
 
         private static void TerminalControls_CustomControlGetter(IMyTerminalBlock block, List<IMyTerminalControl> controls)
@@ -31,12 +44,19 @@ namespace avaness.PistonHeadTools
 
             IMyTerminalControl detach = null;
             IMyTerminalControl attach = null;
+            IMyTerminalControl smallTop = null;
             int move = 0;
             for (int i = controls.Count - 1; i >= 0; i--)
             {
                 IMyTerminalControl c = controls[i];
-                if (move == 2 && c.Id == "Reverse")
+                if (move >= 2 && c.Id == "Reverse")
                 {
+                    if(smallTop != null)
+                    {
+                        controls[i] = smallTop;
+                        i++;
+                        controls[i] = c;
+                    }
                     if (attach != null && detach != null)
                     {
                         controls[i + 1] = detach;
@@ -48,7 +68,7 @@ namespace avaness.PistonHeadTools
                 if (move > 0)
                     controls[i + move] = c;
 
-                if (move < 2)
+                if (move < 3)
                 {
                     if (c.Id == "Attach")
                     {
@@ -60,8 +80,32 @@ namespace avaness.PistonHeadTools
                         detach = c;
                         move++;
                     }
+                    else if(c.Id == "AddSmallTop")
+                    {
+                        smallTop = c;
+                        move++;
+                    }
                 }
             }
+        }
+
+        private long RandomLong()
+        {
+            byte[] bytes = new byte[8];
+            rand.NextBytes(bytes);
+            return BitConverter.ToInt64(bytes, 0);
+        }
+
+        public bool RandomEntityId(out long id)
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                id = RandomLong();
+                if (id != 0 && !MyAPIGateway.Entities.EntityExists(id))
+                    return true;
+            }
+            id = 0;
+            return false;
         }
     }
 }

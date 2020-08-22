@@ -1,4 +1,6 @@
 ﻿using ProtoBuf;
+using Sandbox.Game;
+using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -14,17 +16,17 @@ namespace avaness.PistonHeadTools
         [ProtoMember(1)]
         public long entityId;
         [ProtoMember(2)]
-        public bool attach;
+        public byte mode;
 
         public const ushort id = 52670;
 
         public NetPacket()
         { }
 
-        public NetPacket(IMyMechanicalConnectionBlock block, bool attach)
+        public NetPacket(IMyPistonBase block, byte mode)
         {
             entityId = block.EntityId;
-            this.attach = attach;
+            this.mode = mode;
         }
 
         public static void Received(byte[] data)
@@ -36,19 +38,21 @@ namespace avaness.PistonHeadTools
 
         public void Received()
         {
-            IMyMechanicalConnectionBlock block = MyAPIGateway.Entities.GetEntityById(entityId) as IMyMechanicalConnectionBlock;
+            IMyPistonBase block = MyAPIGateway.Entities.GetEntityById(entityId) as IMyPistonBase;
             if(block != null)
             {
-                if (attach)
+                if (mode == 0)
+                    PistonLogic.Detach(block);
+                else if (mode == 1)
                     PistonLogic.Attach(block);
                 else
-                    PistonLogic.Detach(block);
+                    PistonLogic.CreateSmallTop(block);
             }
         }
 
         public void SendToServer()
         {
-            if(MySession.IsServer)
+            if(MySession.Instance.IsServer)
                 Received();
             else
                 MyAPIGateway.Multiplayer.SendMessageToServer(id, MyAPIGateway.Utilities.SerializeToBinary<NetPacket>(this));
