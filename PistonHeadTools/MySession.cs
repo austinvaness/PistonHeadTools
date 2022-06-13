@@ -23,9 +23,9 @@ namespace avaness.PistonHeadTools
 
             MyAPIGateway.TerminalControls.CustomControlGetter += TerminalControls_CustomControlGetter;
             if (IsServer)
-                MyAPIGateway.Multiplayer.RegisterMessageHandler(NetPacket.id, NetPacket.Received);
+                MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(NetPacket.id, NetPacket.Received);
             else
-                MyAPIGateway.Multiplayer.RegisterMessageHandler(AddBlockPacket.id, AddBlockPacket.Received);
+                MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(AddBlockPacket.id, AddBlockPacket.Received);
         }
 
         protected override void UnloadData()
@@ -33,8 +33,8 @@ namespace avaness.PistonHeadTools
             Instance = null;
 
             MyAPIGateway.TerminalControls.CustomControlGetter -= TerminalControls_CustomControlGetter;
-            MyAPIGateway.Multiplayer.UnregisterMessageHandler(NetPacket.id, NetPacket.Received);
-            MyAPIGateway.Multiplayer.UnregisterMessageHandler(AddBlockPacket.id, AddBlockPacket.Received);
+            MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(NetPacket.id, NetPacket.Received);
+            MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(AddBlockPacket.id, AddBlockPacket.Received);
         }
 
         private static void TerminalControls_CustomControlGetter(IMyTerminalBlock block, List<IMyTerminalControl> controls)

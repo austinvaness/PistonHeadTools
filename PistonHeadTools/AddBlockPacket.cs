@@ -24,7 +24,7 @@ namespace avaness.PistonHeadTools
             this.newTop = newTop;
         }
 
-        public static void Received(byte[] data)
+        public static void Received(ushort id, byte[] data, ulong sender, bool isArrivedFromServer)
         {
             AddBlockPacket temp = MyAPIGateway.Utilities.SerializeFromBinary<AddBlockPacket>(data);
             if (temp != null)

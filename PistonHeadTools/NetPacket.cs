@@ -29,7 +29,7 @@ namespace avaness.PistonHeadTools
             this.mode = mode;
         }
 
-        public static void Received(byte[] data)
+        public static void Received(ushort id, byte[] data, ulong sender, bool isArrivedFromServer)
         {
             NetPacket temp = MyAPIGateway.Utilities.SerializeFromBinary<NetPacket>(data);
             if (temp != null)

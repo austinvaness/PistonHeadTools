@@ -34,39 +34,43 @@ namespace avaness.PistonHeadTools
         {
             if (block.CubeGrid?.Physics == null)
                 return;
+            AddControls();
+        }
 
-            if(!controls)
-            {
-                controls = true;
+        private static void AddControls()
+        {
+            if (controls)
+                return;
 
-                IMyTerminalControlButton detach = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyPistonBase>("Detach");
-                detach.Title = MyStringId.GetOrCompute("Detach");
-                detach.Enabled = HasTop;
-                detach.Visible = True;
-                detach.SupportsMultipleBlocks = true;
-                detach.Action = DetachClient;
-                MyAPIGateway.TerminalControls.AddControl<IMyPistonBase>(detach);
-                AddAction<IMyPistonBase>(detach, "", True);
+            IMyTerminalControlButton detach = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyPistonBase>("Detach");
+            detach.Title = MyStringId.GetOrCompute("Detach");
+            detach.Enabled = HasTop;
+            detach.Visible = True;
+            detach.SupportsMultipleBlocks = true;
+            detach.Action = DetachClient;
+            MyAPIGateway.TerminalControls.AddControl<IMyPistonBase>(detach);
+            AddAction<IMyPistonBase>(detach, "", True);
 
-                IMyTerminalControlButton attach = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyPistonBase>("Attach");
-                attach.Title = MyStringId.GetOrCompute("Attach");
-                attach.Enabled = NeedsTop;
-                attach.Visible = True;
-                attach.SupportsMultipleBlocks = true;
-                attach.Action = AttachClient;
-                MyAPIGateway.TerminalControls.AddControl<IMyPistonBase>(attach);
-                AddAction<IMyPistonBase>(attach, "", True);
+            IMyTerminalControlButton attach = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyPistonBase>("Attach");
+            attach.Title = MyStringId.GetOrCompute("Attach");
+            attach.Enabled = NeedsTop;
+            attach.Visible = True;
+            attach.SupportsMultipleBlocks = true;
+            attach.Action = AttachClient;
+            MyAPIGateway.TerminalControls.AddControl<IMyPistonBase>(attach);
+            AddAction<IMyPistonBase>(attach, "", True);
 
-                IMyTerminalControlButton addSmallTop = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyPistonBase>("AddSmallTop");
-                addSmallTop.Title = MyStringId.GetOrCompute("Add Small Head");
-                addSmallTop.Enabled = (b) => NeedsTop(b) && IsLargePiston(b);
-                addSmallTop.Visible = IsLargePiston;
-                addSmallTop.SupportsMultipleBlocks = true;
-                addSmallTop.Action = CreateSmallTopClient;
-                addSmallTop.Tooltip = MyStringId.GetOrCompute("To use small head, piston position must be greater than 0.3");
-                MyAPIGateway.TerminalControls.AddControl<IMyPistonBase>(addSmallTop);
-                AddAction<IMyPistonBase>(addSmallTop, "", IsLargePiston);
-            }
+            IMyTerminalControlButton addSmallTop = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyPistonBase>("AddSmallTop");
+            addSmallTop.Title = MyStringId.GetOrCompute("Add Small Head");
+            addSmallTop.Enabled = (b) => NeedsTop(b) && IsLargePiston(b);
+            addSmallTop.Visible = IsLargePiston;
+            addSmallTop.SupportsMultipleBlocks = true;
+            addSmallTop.Action = CreateSmallTopClient;
+            addSmallTop.Tooltip = MyStringId.GetOrCompute("To use small head, piston position must be greater than 0.3");
+            MyAPIGateway.TerminalControls.AddControl<IMyPistonBase>(addSmallTop);
+            AddAction<IMyPistonBase>(addSmallTop, "", IsLargePiston);
+
+            controls = true;
         }
 
         private static void DetachClient(IMyTerminalBlock block)
